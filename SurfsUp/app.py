@@ -55,13 +55,17 @@ def welcome():
 @app.route("/api/v1.0/precipitation")
 def precipitation():
 
+    # Create a session (link)
+
     session = Session(engine)
+
+    """Retrieve data on precipitation analysis from the last 12 months"""
 
     results = session.query(Measurement.prcp, Measurement.date).filter(Measurement.date >='2016-08-23').order_by(Measurement.date).all()
 
     session.close()
 
-    # Convert list of tuples into a dictionary
+    # Convert into a dictionary
     
     precipitation = []
     for prcp_data in results:
@@ -75,7 +79,7 @@ def precipitation():
 @app.route("/api/v1.0/stations")
 def stations():
 
-    # Create a session (link) from Python to the DB
+    # Create a session (link)
 
     session = Session(engine)
 
@@ -85,7 +89,7 @@ def stations():
 
     session.close()
     
-    # Convert list of tuples of all stations into normal list
+    # Convert list into normal list
     
     all_stations = list(np.ravel(results))
 
@@ -94,7 +98,7 @@ def stations():
 @app.route("/api/v1.0/tobs")
 def tobs():
 
-    # Query the dates and temperature observations of the most-active station for the previous year of data.
+    # Create a session (link)
 
     session = Session(engine)
 
@@ -104,7 +108,7 @@ def tobs():
     
     session.close()
 
-    # Convert list of tuples of dates and temperature observations into normal list
+    # Convert list of dates and temperature observations into normal list
 
     active_stations = list(np.ravel(results))
 
@@ -114,6 +118,8 @@ def tobs():
 def start():
     
     start_date = input(f"Enter a start date.")
+
+    # Create a session (link)
 
     session = Session(engine)
 
@@ -142,12 +148,18 @@ def start_to_end():
     start_date = input(f"Enter start date.")
     end_date = input(f"Enter end date.")
 
+    # Create a session (link)
+
     session = Session(engine)
+
+    """Return a list of the minimum temp, average temp and maximum temp for a given start date and end date"""
 
     results = session.query(func.min(Measurement.tobs), func.max(Measurement.tobs),func.avg(Measurement.tobs)).filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
 
     session.close()
 
+    # Convert list into a dictionary
+    
     temp_start_end = []
 
     for Tmin, Tave, Tmax in results:
